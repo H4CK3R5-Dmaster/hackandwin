@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model challenge {
+  id             Int              @id @default(autoincrement())
+  c_name         String           @unique(map: "title") @db.VarChar(100)
+  c_flag         String           @db.VarChar(255)
+  c_description  String?          @db.Text
+  c_add_infos    String?          @db.Text
+  exp            Int              @default(50)
+  c_category     String           @db.VarChar(20)
+  path           String?          @db.VarChar(500)
+  token          String           @unique(map: "token") @db.VarChar(100)
+  token_uploader String           @db.VarChar(50)
+  Status         challenge_Status @default(Pendding)
+  date_at        DateTime         @unique(map: "date_at") @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contact {
+  id       Int      @id @default(autoincrement())
+  email    String   @db.VarChar(100)
+  object   String   @db.VarChar(255)
+  message  String   @db.VarChar(500)
+  dateSend DateTime @unique(map: "dateSend") @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model rating_challenges {
+  id              Int    @id @default(autoincrement())
+  rate_positive   Int?
+  rate_negative   Int?
+  token_user      String @db.VarChar(50)
+  token_challenge String @db.VarChar(100)
+  token           String @unique(map: "token") @db.VarChar(20)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_challenge {
+  id              Int      @id @default(autoincrement())
+  token_user      String   @db.VarChar(50)
+  token_challenge String   @db.VarChar(50)
+  token           String   @unique(map: "token") @db.VarChar(20)
+  modifed_at      DateTime @unique(map: "modifed_at") @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_progression {
+  id          Int                    @id @default(autoincrement())
+  token_user  String                 @unique(map: "token_user", length: 50) @db.VarChar(100)
+  exp         Int
+  grade       user_progression_grade @default(D_butant)
+  token       String                 @unique(map: "token") @db.VarChar(20)
+  lastEdit_at DateTime               @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id                 Int         @id @default(autoincrement())
+  pseudo             String      @unique(map: "pseudo") @db.VarChar(50)
+  email              String      @unique(map: "email") @db.VarChar(100)
+  password           String      @db.VarChar(255)
+  token              String      @unique(map: "token") @db.VarChar(50)
+  level              users_level @default(member)
+  remember_token     String?     @unique(map: "remember_token") @db.VarChar(250)
+  confirmation_token String?     @unique(map: "confirmation_token") @db.VarChar(250)
+  confirmation_at    DateTime?   @unique(map: "confirmation_at") @db.DateTime(0)
+  reset_token        String?     @unique(map: "reset_token") @db.VarChar(250)
+  reset_at           DateTime?   @unique(map: "reset_at") @db.DateTime(0)
+}
+
+enum user_progression_grade {
+  D_butant      @map("Débutant")
+  Intermediaire
+  Avanc_        @map("Avancé")
+  Expert
+  Master
+}
+
+enum users_level {
+  member
+  admin
+}
+
+enum challenge_Status {
+  Confirmed
+  Pendding
+}
